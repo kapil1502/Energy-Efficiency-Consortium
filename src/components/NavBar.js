@@ -22,7 +22,7 @@ const NavBar = () => {
     };
 
     return (
-        <nav className="bg-green-600 shadow-lg">
+        <nav className="bg-green-700 shadow-lg">
             <div className="container mx-auto px-6 py-3 flex justify-between items-center">
                 <div className="text-white font-bold text-xl">
                     <Link to="/">Energy Certification</Link>
