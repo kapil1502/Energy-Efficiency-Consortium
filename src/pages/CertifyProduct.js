@@ -3,8 +3,8 @@ import { ethers } from 'ethers';
 import { setupContract } from '../utils/contractSetup';
 import { Button, Input, Card, CardHeader, CardContent } from '../components-wrapper/ui';
 
-const PINATA_API_KEY = '263f9b2c04c1097e2fee';
-const PINATA_SECRET_API_KEY = '9f7f35539949ccf19945db0aa372a08404997a980c30083522ac94dd8112b8a3';
+const PINATA_API_KEY = '263f9b2c04c1097e2fee'; // Use your actual API Key
+const PINATA_SECRET_API_KEY = '9f7f35539949ccf19945db0aa372a08404997a980c30083522ac94dd8112b8a3'; // Use your actual Secret Key
 
 const uploadToPinata = async (file) => {
     const url = "https://api.pinata.cloud/pinning/pinFileToIPFS";
@@ -34,13 +34,13 @@ const CertifyProduct = () => {
     const [productName, setProductName] = useState('');
     const [productModel, setProductModel] = useState('');
     const [energyRating, setEnergyRating] = useState('');
-    const [certificationDocument, setCertificationDocument] = useState(null); // Change to store file
+    const [certificationDocument, setCertificationDocument] = useState(null);
     const [issuingAuthority, setIssuingAuthority] = useState('');
     const [validityPeriod, setValidityPeriod] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
 
     const handleFileChange = (e) => {
-        setCertificationDocument(e.target.files[0]); // Set the file when user selects it
+        setCertificationDocument(e.target.files[0]); // Store the selected file
     };
 
     const certifyProduct = async () => {
@@ -55,7 +55,7 @@ const CertifyProduct = () => {
             console.log('Uploaded to IPFS with hash:', ipfsHash);
 
             const { contract } = await setupContract();
-            const productIdHash = ethers.utils.id(productId);  // Hash product ID for uniqueness
+            const productIdHash = ethers.utils.id(productId); // Hash product ID for uniqueness
             const tx = await contract.certifyProduct(
                 productIdHash,
                 productName,
@@ -87,6 +87,7 @@ const CertifyProduct = () => {
                     <Input 
                         type="file" 
                         className="mb-4" 
+                        accept=".pdf,.doc,.docx" // Specify accepted file types
                         onChange={handleFileChange} // Handle file selection
                     />
                     <Input className="mb-4" placeholder="Issuing Authority" value={issuingAuthority} onChange={(e) => setIssuingAuthority(e.target.value)} />
