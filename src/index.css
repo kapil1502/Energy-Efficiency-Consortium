@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+.app {
+  text-align: center;
+}
+
+.home-page {
+  background-image: url("https://assets.weforum.org/article/image/large_pupVfmSQzHolCuff7gJsMZu_ytQRJQYDhYA4GgRIIuc.jpg");
+  background-size: cover;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+}
+
+.main-title {
+  font-size: 3rem;
+  margin-bottom: 20px;
+}
+
+.description {
+  font-size: 1.5rem;
+  margin-bottom: 40px;
+}
+
+.links {
+  display: flex;
+  gap: 20px;
+}
+
+.link-button {
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  font-size: 1.2rem;
+}
+
+.link-button:hover {
+  background-color: #45a049;
+}
