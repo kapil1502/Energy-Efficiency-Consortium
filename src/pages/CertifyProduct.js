@@ -3,7 +3,7 @@ import { ethers } from 'ethers';
 import { setupContract } from '../utils/contractSetup';
 import { Button, Input, Card, CardHeader, CardContent } from '../components-wrapper/ui';
 
-const PINATA_API_KEY = '263f9b2c04c1097e2fee'; // Use your actual API Key
+const PINATA_API_KEY = '263f9b2c04c1097e2fee';
 const PINATA_SECRET_API_KEY = '9f7f35539949ccf19945db0aa372a08404997a980c30083522ac94dd8112b8a3'; // Use your actual Secret Key
 
 const uploadToPinata = async (file) => {
@@ -40,7 +40,7 @@ const CertifyProduct = () => {
     const [errorMessage, setErrorMessage] = useState('');
 
     const handleFileChange = (e) => {
-        setCertificationDocument(e.target.files[0]); // Store the selected file
+        setCertificationDocument(e.target.files[0]);
     };
 
     const certifyProduct = async () => {
@@ -50,18 +50,17 @@ const CertifyProduct = () => {
                 return;
             }
 
-            // Upload the document to Pinata and get the IPFS hash
             const ipfsHash = await uploadToPinata(certificationDocument);
             console.log('Uploaded to IPFS with hash:', ipfsHash);
 
             const { contract } = await setupContract();
-            const productIdHash = ethers.utils.id(productId); // Hash product ID for uniqueness
+            const productIdHash = ethers.utils.id(productId);
             const tx = await contract.certifyProduct(
                 productIdHash,
                 productName,
                 productModel,
                 energyRating,
-                ipfsHash, // Use the IPFS hash instead of the file path
+                ipfsHash,
                 issuingAuthority,
                 parseInt(validityPeriod)
             );
@@ -87,8 +86,8 @@ const CertifyProduct = () => {
                     <Input 
                         type="file" 
                         className="mb-4" 
-                        accept=".pdf,.doc,.docx" // Specify accepted file types
-                        onChange={handleFileChange} // Handle file selection
+                        accept=".pdf,.doc,.docx"
+                        onChange={handleFileChange}
                     />
                     <Input className="mb-4" placeholder="Issuing Authority" value={issuingAuthority} onChange={(e) => setIssuingAuthority(e.target.value)} />
                     <Input className="mb-4" placeholder="Validity Period (in seconds)" value={validityPeriod} onChange={(e) => setValidityPeriod(e.target.value)} />

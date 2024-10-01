@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { ethers } from 'ethers';
 
 const WalletConnect = ({ onConnect }) => {
     const [account, setAccount] = useState(null);
@@ -10,7 +9,7 @@ const WalletConnect = ({ onConnect }) => {
             try {
                 const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                 setAccount(accounts[0]);
-                onConnect(accounts[0]); // Call the onConnect prop function to pass the connected account
+                onConnect(accounts[0]);
                 setErrorMessage('');
             } catch (error) {
                 setErrorMessage('Error connecting to MetaMask. Please try again.');

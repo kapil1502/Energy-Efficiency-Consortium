@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Button, Input, Card, CardHeader, CardContent } from '../components-wrapper/ui'; // Import your UI components
-import { ethers } from 'ethers'; // Import ethers.js
+import { Button, Input, Card, CardHeader, CardContent } from '../components-wrapper/ui';
+import { ethers } from 'ethers';
 import { contractAddress, contract_abi } from '../contract';
 
 const VerifyCertificate = () => {
@@ -19,7 +19,6 @@ const VerifyCertificate = () => {
             const signer = provider.getSigner();
             const contract = new ethers.Contract(contractAddress, contract_abi, signer);
 
-            // Call the getProductCertification function
             const data = await contract.getProductCertification(productId);
             setCertificationData(data);
             setErrorMessage('');

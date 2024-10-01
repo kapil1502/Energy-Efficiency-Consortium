@@ -1,54 +1,75 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Input, Card, CardHeader, CardContent } from '../components-wrapper/ui';
-import { ethers } from 'ethers'; // Assuming you are using ethers.js
-import { contractAddress, contract_abi } from "../contract"; // Import contract ABI and address
+import { setupContract } from '../utils/contractSetup';
+
+// Not here we have to make changes the logic is not good.
 
 const ManageIssuers = () => {
+  const [contract, setContract] = useState(null);
+  const [signer, setSigner] = useState(null);
+  const [isOwner, setIsOwner] = useState(false);
   const [issuerAddress, setIssuerAddress] = useState('');
   const [isApproved, setIsApproved] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [issuers, setIssuers] = useState([]);
 
   useEffect(() => {
-    loadIssuers();
+    const init = async () => {
+      try {
+        const { contract, signer } = await setupContract();
+        setContract(contract);
+        const address = await signer.getAddress();
+        setSigner(address);
+
+        const ownerAddress = await contract.owner;
+        setIsOwner(address.toLowerCase() === ownerAddress.toLowerCase());
+
+        const isIssuer = await contract.certificateIssuers(address);
+        setIsCertificateIssuer(isIssuer);
+      } catch (error) {
+        console.error("An error occurred while initializing the app:", error);
+      }
+    };
+
+    init();
   }, []);
 
-  // Function to load existing issuers from the smart contract
-  const loadIssuers = async () => {
-    try {
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner();
-      const contract = new ethers.Contract(contractAddress, contract_abi, signer);
+  // const loadIssuers = async () => {
+  //   try {
+  //     const provider = new ethers.providers.Web3Provider(window.ethereum);
+  //     const signer = provider.getSigner();
+  //     const contract = new ethers.Contract(contractAddress, contract_abi, signer);
 
-      // Fetch the list of certificate issuers
-      const issuerAddresses = []; // Logic to fetch issuers
-      setIssuers(issuerAddresses);
-    } catch (error) {
-      console.error('Error loading issuers:', error);
-    }
-  };
+  //     // Fetch the list of certificate issuers
+  //     const issuerAddresses = []; // Logic to fetch issuers
+  //     setIssuers(issuerAddresses);
+  //   } catch (error) {
+  //     console.error('Error loading issuers:', error);
+  //   }
+  // };
 
   // Function to update the issuer's approval status
   const updateIssuerApproval = async () => {
     try {
       if (!issuerAddress) {
-        setErrorMessage('Please enter a valid issuer address.');
+        setErrorMessage('Please enter a valid issuer address you want to give an authority for.');
         return;
       }
 
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner();
-      const contract = new ethers.Contract(contractAddress, contract_abi, signer);
+      if(!isOwner){
+        setErrorMessage('You are not authorized to managing the issuers.');
+        return;    
+      }
 
-      // Call the smart contract function to update issuer approval
-      await contract.updateCertificateIssuer(issuerAddress, isApproved);
+      const tx=await contract.updateCertificateIssuer(issuerAddress, isApproved);
+      await tx.wait();
       setErrorMessage('');
-      loadIssuers(); // Reload the issuers to reflect changes
-      setIssuerAddress('');
-      setIsApproved(false);
+      alert("Certificate issuer updated successfully!");
+
     } catch (error) {
       setErrorMessage('An error occurred while updating the issuer status.');
       console.error(error);
+      alert("Error certifying product. Check console for details.");
     }
   };
 

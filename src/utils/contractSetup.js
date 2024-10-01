@@ -1,6 +1,5 @@
 import { ethers } from 'ethers';
 
-// Replace with your contract ABI and address
 const CONTRACT_ABI = [
 	{
 		"inputs": [],
@@ -288,8 +287,8 @@ const CONTRACT_ABI = [
 		"stateMutability": "view",
 		"type": "function"
 	}
-]; // Add your contract ABI here
-const CONTRACT_ADDRESS = "0x7bfc0E04367470998858454C499B9c70ae19680A"; // Add your contract address here
+];
+const CONTRACT_ADDRESS = "0x7bfc0E04367470998858454C499B9c70ae19680A";
 
 export const setupContract = async () => {
   if (typeof window.ethereum !== 'undefined') {

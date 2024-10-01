@@ -9,7 +9,17 @@ const EnergyCertificationDashboard = () => {
   const [isOwner, setIsOwner] = useState(false);
   const [isCertificateIssuer, setIsCertificateIssuer] = useState(false);
 
-  //...same state setup as before...
+  const [newIssuerAddress, setNewIssuerAddress] = useState('');
+  const [productId, setProductId] = useState('');
+  const [productName, setProductName] = useState('');
+  const [productModel, setProductModel] = useState('');
+  const [energyRating, setEnergyRating] = useState('');
+  const [certificationDocument, setCertificationDocument] = useState('');
+  const [issuingAuthority, setIssuingAuthority] = useState('');
+  const [validityPeriod, setValidityPeriod] = useState('');
+
+  const [certificationDetails, setCertificationDetails] = useState(null);
+  const [isCertificationValid, setIsCertificationValid] = useState(null);
 
   useEffect(() => {
     const init = async () => {
@@ -19,7 +29,7 @@ const EnergyCertificationDashboard = () => {
         const address = await signer.getAddress();
         setAccount(address);
 
-        const ownerAddress = await contract.owner();
+        const ownerAddress = await contract.owner;
         setIsOwner(address.toLowerCase() === ownerAddress.toLowerCase());
 
         const isIssuer = await contract.certificateIssuers(address);
@@ -33,11 +43,43 @@ const EnergyCertificationDashboard = () => {
   }, []);
 
   const updateCertificateIssuer = async () => {
-    //.. same code logic ...
+    try {
+        const tx = await contract.updateCertificateIssuer(newIssuerAddress, true);
+        await tx.wait();
+        alert("Certificate issuer updated successfully!");
+      } catch (error) {
+        console.error("Error updating certificate issuer:", error);
+        alert("Error updating certificate issuer. Check console for details.");
+      }
   };
 
   const certifyProduct = async () => {
-    //.. same code logic ...
+    try {
+        const tx = await contract.certifyProduct(
+          ethers.utils.id(productId),
+          productName,
+          productModel,
+          energyRating,
+          certificationDocument,
+          issuingAuthority,
+          parseInt(validityPeriod)
+        );
+        await tx.wait();
+        alert("Product certified successfully!");
+      } catch (error) {
+        console.error("Error certifying product:", error);
+        alert("Error certifying product. Check console for details.");
+      }
+  };
+
+  const checkCertificationValidity = async () => {
+    try {
+      const result = await contract.isProductCertificationValid(ethers.utils.id(productId));
+      setIsCertificationValid(result);
+    } catch (error) {
+      console.error("Error checking certification validity:", error);
+      alert("Error checking certification validity. Check console for details.");
+    }
   };
 
   return (
