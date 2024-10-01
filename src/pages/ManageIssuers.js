@@ -6,7 +6,6 @@ import { setupContract } from '../utils/contractSetup';
 
 const ManageIssuers = () => {
   const [contract, setContract] = useState(null);
-  const [signer, setSigner] = useState(null);
   const [isOwner, setIsOwner] = useState(false);
   const [issuerAddress, setIssuerAddress] = useState('');
   const [isApproved, setIsApproved] = useState(false);
@@ -19,13 +18,14 @@ const ManageIssuers = () => {
         const { contract, signer } = await setupContract();
         setContract(contract);
         const address = await signer.getAddress();
-        setSigner(address);
 
         const ownerAddress = await contract.owner;
         setIsOwner(address.toLowerCase() === ownerAddress.toLowerCase());
 
         const isIssuer = await contract.certificateIssuers(address);
-        setIsCertificateIssuer(isIssuer);
+        if(isIssuer)
+          setIssuers(issuers.push(address));
+    
       } catch (error) {
         console.error("An error occurred while initializing the app:", error);
       }
