@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Button, Input, Card, CardHeader, CardContent } from '../components-wrapper/ui';
 import { setupContract } from '../utils/contractSetup';
 
-// Not here we have to make changes the logic is not good.
-
 const ManageIssuers = () => {
   const [contract, setContract] = useState(null);
   const [isOwner, setIsOwner] = useState(false);
@@ -19,36 +17,31 @@ const ManageIssuers = () => {
         setContract(contract);
         const address = await signer.getAddress();
 
-        const ownerAddress = await contract.owner;
-        setIsOwner(address.toLowerCase() === ownerAddress.toLowerCase());
+        if (address) {
+          const ownerAddress = await contract.owner();
 
-        const isIssuer = await contract.certificateIssuers(address);
-        if(isIssuer)
-          setIssuers(issuers.push(address));
-    
+          // Check if the address is valid and compare
+          if (ownerAddress && typeof ownerAddress === 'string' && address.toLowerCase() === ownerAddress.toLowerCase()) {
+            setIsOwner(true);
+          }
+
+          const isIssuer = await contract.certificateIssuers(address);
+          if (isIssuer) {
+            // Add issuer to the list without modifying the original issuers array
+            setIssuers(prevIssuers => [...prevIssuers, address]);
+          }
+        } else {
+          setErrorMessage('Unable to fetch the address.');
+        }
       } catch (error) {
         console.error("An error occurred while initializing the app:", error);
+        setErrorMessage('Failed to initialize the contract or fetch the address.');
       }
     };
 
     init();
   }, []);
 
-  // const loadIssuers = async () => {
-  //   try {
-  //     const provider = new ethers.providers.Web3Provider(window.ethereum);
-  //     const signer = provider.getSigner();
-  //     const contract = new ethers.Contract(contractAddress, contract_abi, signer);
-
-  //     // Fetch the list of certificate issuers
-  //     const issuerAddresses = []; // Logic to fetch issuers
-  //     setIssuers(issuerAddresses);
-  //   } catch (error) {
-  //     console.error('Error loading issuers:', error);
-  //   }
-  // };
-
-  // Function to update the issuer's approval status
   const updateIssuerApproval = async () => {
     try {
       if (!issuerAddress) {
@@ -56,20 +49,19 @@ const ManageIssuers = () => {
         return;
       }
 
-      if(!isOwner){
-        setErrorMessage('You are not authorized to managing the issuers.');
-        return;    
+      if (!isOwner) {
+        setErrorMessage('You are not authorized to manage the issuers.');
+        return;
       }
 
-      const tx=await contract.updateCertificateIssuer(issuerAddress, isApproved);
+      const tx = await contract.updateCertificateIssuer(issuerAddress, isApproved);
       await tx.wait();
       setErrorMessage('');
       alert("Certificate issuer updated successfully!");
-
     } catch (error) {
       setErrorMessage('An error occurred while updating the issuer status.');
       console.error(error);
-      alert("Error certifying product. Check console for details.");
+      alert("Error updating issuer. Check console for details.");
     }
   };
 
